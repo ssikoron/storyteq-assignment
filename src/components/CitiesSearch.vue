@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, reactive, ref, watchEffect } from "vue";
+import { computed, reactive, watchEffect } from "vue";
 import AutocompleteInput from "@/components/AutocompleteInput.vue";
 import { useCities } from "@/stores/cities";
 
@@ -13,6 +13,10 @@ const isSearching = computed(() => {
   return state.searchQuery.length >= 3;
 });
 
+const shouldShowHelpText = computed(() => {
+  return state.searchQuery.length > 0 && state.searchQuery.length < 3;
+});
+
 const hasResults = computed(() => {
   return store.filteredItems && store.filteredItems.length > 0;
 });
@@ -24,15 +28,27 @@ watchEffect(() => {
     store.reset();
   }
 });
+
+function handleClick(item: string) {
+  console.log(`You clicked on the city: ${item}.`);
+}
 </script>
 
 <template>
-  <AutocompleteInput v-model="state.searchQuery">
+  <AutocompleteInput
+    v-model="state.searchQuery"
+    :help-text="
+      shouldShowHelpText
+        ? 'You must enter at least 3 characters to search'
+        : null
+    "
+  >
     <ul v-if="hasResults" class="divide-y divide-slate-200 px-2">
       <li
         v-for="city of store.filteredItems"
         :key="city"
         class="cursor-pointer px-2 py-2 last-of-type:border-0 hover:bg-slate-100"
+        @click="handleClick(city)"
       >
         <div class="inline-flex items-center">
           <img

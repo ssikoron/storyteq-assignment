@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 
 defineProps<{
   modelValue: string;
+  helpText: string | null;
 }>();
 
 const emit = defineEmits<{
@@ -31,7 +32,8 @@ function handleInput(e: Event) {
         >
           <img
             src="@/assets/icons/search.svg"
-            class="h-5 w-5 text-gray-500 dark:text-gray-400"
+            class="h-5 w-5 text-gray-500"
+            alt="Search Icon"
           />
         </div>
         <input
@@ -43,6 +45,12 @@ function handleInput(e: Event) {
           :value="modelValue"
           @input="handleInput"
         />
+        <div
+          v-if="helpText"
+          class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-12 text-xs text-gray-400"
+        >
+          {{ helpText }}
+        </div>
       </div>
     </form>
     <slot></slot>

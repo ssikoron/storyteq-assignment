@@ -2,6 +2,7 @@
 import { computed, reactive, watchEffect } from "vue";
 import AutocompleteInput from "@/components/AutocompleteInput.vue";
 import { useBooks } from "@/stores/books";
+import type { Book } from "@/stores/datasets";
 
 const state = reactive({
   searchQuery: "",
@@ -11,6 +12,10 @@ const store = useBooks();
 
 const isSearching = computed(() => {
   return state.searchQuery.length >= 3;
+});
+
+const shouldShowHelpText = computed(() => {
+  return state.searchQuery.length > 0 && state.searchQuery.length < 3;
 });
 
 const hasResults = computed(() => {
@@ -24,15 +29,27 @@ watchEffect(() => {
     store.reset();
   }
 });
+
+function handleClick(book: Book) {
+  console.log(`You clicked on the book: ${book.title}, by ${book.author}.`);
+}
 </script>
 
 <template>
-  <AutocompleteInput v-model="state.searchQuery">
+  <AutocompleteInput
+    v-model="state.searchQuery"
+    :help-text="
+      shouldShowHelpText
+        ? 'You must enter at least 3 characters to search'
+        : null
+    "
+  >
     <ul v-if="hasResults" class="divide-y divide-slate-200 px-2">
       <li
         v-for="book of store.filteredItems"
         :key="book.title"
         class="cursor-pointer px-2 py-2 last-of-type:border-0 hover:bg-slate-100"
+        @click="handleClick(book)"
       >
         <div class="inline-flex items-center">
           <img
