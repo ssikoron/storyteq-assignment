@@ -19,6 +19,15 @@ describe("CitiesSearch", () => {
     cy.get("li").should("not.exist");
   });
 
+  it("shows helptext when < 3 chars", () => {
+    cy.mount(CitiesSearch);
+    cy.get("input").type("sa");
+    cy.get("#helpText").should(
+      "contain",
+      "You must enter at least 3 characters to search"
+    );
+  });
+
   it("shows 'no results' when no results'", () => {
     cy.mount(CitiesSearch);
     cy.get("input").type("thisShouldProduceNoResults");
