@@ -22,7 +22,8 @@ import "./commands";
 // Import global styles
 import "@/assets/main.css";
 
-import { mount } from "cypress/vue";
+import { mount as _mount } from "cypress/vue";
+import { createPinia, Pinia, setActivePinia } from "pinia";
 
 // Augment the Cypress namespace to include type definitions for
 // your custom command.
@@ -37,7 +38,23 @@ declare global {
   }
 }
 
-Cypress.Commands.add("mount", mount);
+Cypress.Commands.add("mount", _mount);
+
+let pinia: Pinia = createPinia();
+
+beforeEach(() => {
+  pinia = createPinia();
+  setActivePinia(pinia);
+});
+
+export function mount(Comp: any, options?: any) {
+  return _mount(Comp, {
+    ...options,
+    global: {
+      plugins: [pinia],
+    },
+  });
+}
 
 // Example use:
 // cy.mount(MyComponent)
